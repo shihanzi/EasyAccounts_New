@@ -21,12 +21,7 @@ namespace EasyAccounts.DbContexts
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserRole>().ToTable("UserRole");
-            //     foreach (var relationship in modelBuilder.Model.GetEntityTypes()
-            //.SelectMany(e => e.GetForeignKeys()))
-            //     {
-            //         relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            //     }
+            modelBuilder.Entity<UserRole>().ToTable("UserRole"); //name the table in sigularity
 
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
@@ -65,29 +60,22 @@ namespace EasyAccounts.DbContexts
             // PurchaseOrder - Supplier relationship
             modelBuilder.Entity<PurchaseOrder>()
                 .HasOne(po => po.Supplier)
-                .WithMany()
+                .WithMany(s => s.PurchaseOrders)
                 .HasForeignKey(po => po.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // GRN - Supplier relationship
             modelBuilder.Entity<GRN>()
                 .HasOne(grn => grn.Supplier)
-                .WithMany()
+                .WithMany(g => g.GRNs)
                 .HasForeignKey(grn => grn.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // GRN - PurchaseOrder relationship (with delete behavior specified)
             modelBuilder.Entity<GRN>()
                 .HasOne(grn => grn.PurchaseOrder)
-                .WithMany()
-                .HasForeignKey(grn => grn.PurchaseOrderId)
-                .OnDelete(DeleteBehavior.Restrict); // Specify delete behavior
-
-            // GRN - Items relationship (using property reference instead of string for clarity)
-            modelBuilder.Entity<GRN>()
-                .HasMany(grn => grn.Items)
                 .WithOne()
-                .HasForeignKey(i => i.GRNId) // Reference the property directly
+                .HasForeignKey<GRN>(gn => gn.PurchaseOrderId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

@@ -8,7 +8,9 @@
         public string Phone { get; set; }
         public bool IsActive { get; set; }
 
-        public virtual PurchaseOrder PurchaseOrder { get; set; }
-        public virtual GRN GRN { get; set; }
+        public virtual List<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
+
+        // One-to-Many relationship: A Supplier can have many GRNs
+        public virtual List<GRN> GRNs { get; set; } = new List<GRN>();
     }
 }

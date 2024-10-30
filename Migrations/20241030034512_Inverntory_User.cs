@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EasyAccounts.Migrations
 {
     /// <inheritdoc />
-    public partial class initialcreate : Migration
+    public partial class Inverntory_User : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -81,8 +81,7 @@ namespace EasyAccounts.Migrations
                     Rate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     IsReceived = table.Column<bool>(type: "bit", nullable: false),
-                    SupplierId = table.Column<int>(type: "int", nullable: false),
-                    SupplierId1 = table.Column<int>(type: "int", nullable: true)
+                    SupplierId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,15 +92,10 @@ namespace EasyAccounts.Migrations
                         principalTable: "Suppliers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PurchaseOrders_Suppliers_SupplierId1",
-                        column: x => x.SupplierId1,
-                        principalTable: "Suppliers",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRoles",
+                name: "UserRole",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
@@ -109,15 +103,15 @@ namespace EasyAccounts.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_UserRole", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleId",
+                        name: "FK_UserRole_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserId",
+                        name: "FK_UserRole_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -139,8 +133,7 @@ namespace EasyAccounts.Migrations
                     IsReceived = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     SupplierId = table.Column<int>(type: "int", nullable: false),
-                    PurchaseOrderId = table.Column<int>(type: "int", nullable: false),
-                    SupplierId1 = table.Column<int>(type: "int", nullable: true)
+                    PurchaseOrderId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -157,11 +150,6 @@ namespace EasyAccounts.Migrations
                         principalTable: "Suppliers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_GRNs_Suppliers_SupplierId1",
-                        column: x => x.SupplierId1,
-                        principalTable: "Suppliers",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -181,8 +169,7 @@ namespace EasyAccounts.Migrations
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     ItemCategoryId = table.Column<int>(type: "int", nullable: false),
                     PurchaseOrderId = table.Column<int>(type: "int", nullable: false),
-                    GRNId = table.Column<int>(type: "int", nullable: false),
-                    GRNId1 = table.Column<int>(type: "int", nullable: false)
+                    GRNId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -193,12 +180,6 @@ namespace EasyAccounts.Migrations
                         principalTable: "GRNs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Items_GRNs_GRNId1",
-                        column: x => x.GRNId1,
-                        principalTable: "GRNs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Items_ItemCategories_ItemCategoryId",
                         column: x => x.ItemCategoryId,
@@ -216,7 +197,8 @@ namespace EasyAccounts.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_GRNs_PurchaseOrderId",
                 table: "GRNs",
-                column: "PurchaseOrderId");
+                column: "PurchaseOrderId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_GRNs_SupplierId",
@@ -224,21 +206,9 @@ namespace EasyAccounts.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GRNs_SupplierId1",
-                table: "GRNs",
-                column: "SupplierId1",
-                unique: true,
-                filter: "[SupplierId1] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Items_GRNId",
                 table: "Items",
                 column: "GRNId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Items_GRNId1",
-                table: "Items",
-                column: "GRNId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_ItemCategoryId",
@@ -256,15 +226,8 @@ namespace EasyAccounts.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PurchaseOrders_SupplierId1",
-                table: "PurchaseOrders",
-                column: "SupplierId1",
-                unique: true,
-                filter: "[SupplierId1] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_RoleId",
-                table: "UserRoles",
+                name: "IX_UserRole_RoleId",
+                table: "UserRole",
                 column: "RoleId");
         }
 
@@ -275,7 +238,7 @@ namespace EasyAccounts.Migrations
                 name: "Items");
 
             migrationBuilder.DropTable(
-                name: "UserRoles");
+                name: "UserRole");
 
             migrationBuilder.DropTable(
                 name: "GRNs");

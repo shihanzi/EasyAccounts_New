@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyAccounts.Migrations
 {
     [DbContext(typeof(EasyAccDbContext))]
-    [Migration("20241024025035_initialcreate")]
-    partial class initialcreate
+    [Migration("20241030034512_Inverntory_User")]
+    partial class Inverntory_User
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,18 +64,12 @@ namespace EasyAccounts.Migrations
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SupplierId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("PurchaseOrderId");
+                    b.HasIndex("PurchaseOrderId")
+                        .IsUnique();
 
                     b.HasIndex("SupplierId");
-
-                    b.HasIndex("SupplierId1")
-                        .IsUnique()
-                        .HasFilter("[SupplierId1] IS NOT NULL");
 
                     b.ToTable("GRNs");
                 });
@@ -109,9 +103,6 @@ namespace EasyAccounts.Migrations
                         .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<int>("GRNId1")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -135,8 +126,6 @@ namespace EasyAccounts.Migrations
                     b.HasKey("ItemId");
 
                     b.HasIndex("GRNId");
-
-                    b.HasIndex("GRNId1");
 
                     b.HasIndex("ItemCategoryId");
 
@@ -195,16 +184,9 @@ namespace EasyAccounts.Migrations
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SupplierId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("SupplierId");
-
-                    b.HasIndex("SupplierId1")
-                        .IsUnique()
-                        .HasFilter("[SupplierId1] IS NOT NULL");
 
                     b.ToTable("PurchaseOrders");
                 });
@@ -291,26 +273,22 @@ namespace EasyAccounts.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRole", (string)null);
                 });
 
             modelBuilder.Entity("EasyAccounts.Models.GRN", b =>
                 {
                     b.HasOne("EasyAccounts.Models.PurchaseOrder", "PurchaseOrder")
-                        .WithMany()
-                        .HasForeignKey("PurchaseOrderId")
+                        .WithOne()
+                        .HasForeignKey("EasyAccounts.Models.GRN", "PurchaseOrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EasyAccounts.Models.Supplier", "Supplier")
-                        .WithMany()
+                        .WithMany("GRNs")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("EasyAccounts.Models.Supplier", null)
-                        .WithOne("GRN")
-                        .HasForeignKey("EasyAccounts.Models.GRN", "SupplierId1");
 
                     b.Navigation("PurchaseOrder");
 
@@ -319,16 +297,10 @@ namespace EasyAccounts.Migrations
 
             modelBuilder.Entity("EasyAccounts.Models.Item", b =>
                 {
-                    b.HasOne("EasyAccounts.Models.GRN", null)
+                    b.HasOne("EasyAccounts.Models.GRN", "GRN")
                         .WithMany("Items")
                         .HasForeignKey("GRNId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EasyAccounts.Models.GRN", "GRN")
-                        .WithMany()
-                        .HasForeignKey("GRNId1")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EasyAccounts.Models.ItemCategory", "ItemCategory")
@@ -353,14 +325,10 @@ namespace EasyAccounts.Migrations
             modelBuilder.Entity("EasyAccounts.Models.PurchaseOrder", b =>
                 {
                     b.HasOne("EasyAccounts.Models.Supplier", "Supplier")
-                        .WithMany()
+                        .WithMany("PurchaseOrders")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("EasyAccounts.Models.Supplier", null)
-                        .WithOne("PurchaseOrder")
-                        .HasForeignKey("EasyAccounts.Models.PurchaseOrder", "SupplierId1");
 
                     b.Navigation("Supplier");
                 });
@@ -406,11 +374,9 @@ namespace EasyAccounts.Migrations
 
             modelBuilder.Entity("EasyAccounts.Models.Supplier", b =>
                 {
-                    b.Navigation("GRN")
-                        .IsRequired();
+                    b.Navigation("GRNs");
 
-                    b.Navigation("PurchaseOrder")
-                        .IsRequired();
+                    b.Navigation("PurchaseOrders");
                 });
 
             modelBuilder.Entity("EasyAccounts.Models.User", b =>
