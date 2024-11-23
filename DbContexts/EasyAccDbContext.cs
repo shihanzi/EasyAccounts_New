@@ -36,13 +36,6 @@ namespace EasyAccounts.DbContexts
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId);
 
-            // Item - ItemCategory relationship
-            modelBuilder.Entity<Item>()
-                .HasOne(i => i.ItemCategory)
-                .WithMany(c => c.Items)
-                .HasForeignKey(i => i.ItemCategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Item - GRN relationship
             modelBuilder.Entity<Item>()
                 .HasOne(i => i.GRN)
